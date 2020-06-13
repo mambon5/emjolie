@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html  onclick="volare('helicop')" onkeydown="volare('helicop')">
+<head>
+    <title>Gere-Ney</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta charset="UTF-8">
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8">
+
+<link rel="stylesheet" href="style/human.css">
+<link rel="stylesheet" href="style/heli.css">
+<link rel="stylesheet" href="style/corda.css">
+<link rel="stylesheet" href="style/buildings.css">
+<link rel="stylesheet" href="style/bird.css">
+<link rel="stylesheet" href="style/cel.css">
+<link rel="stylesheet" href="style/button.css">
+
+<style>
+
+/* per fer animacions mirar-se be al funció requestAnimationFrame() en comptes
+d'usar setTimeout() */
+
+#formsendsc {
+    position:absolute;
+    visibility:hidden;
+}
+body{
+    background-color:LightCyan;
+    touch-action: manipulation;
+}
+html {
+    touch-action: manipulation;
+}
+#gameover{
+    position:absolute;
+    left:30%;
+    top:30%;
+    visibility:hidden;
+    color:red;
+}
+#score{
+    top:30px;
+    left:30px;
+    position:absolute;
+}
+#controls{
+    position:absolute;
+    visibility:hidden;
+}
+
+</style>
+</head>
+<body onload="carrega();">
+
+<script src="js/class/rect.js"></script>
+<script src="js/class/rectvol.js"></script>
+<script src="js/class/person.js"></script>
+<script src="js/class/edifici.js"></script>
+<script src="js/class/heli.js"></script>
+<script src="js/class/corda.js"></script>
+
+<script src="js/function/randbolet2.js"></script>
+<script src="js/function/underscore.js"></script>
+<script src="js/function/movement.js"></script>
+<script src="js/function/xocs.js"></script>
+<script>
+
+var rescats = 0;
+var rescatat = false;
+let request; //aquesta variable serveix per fer les animacions
+var xocat = false;
+
+/*helicopter position, speed & rope*/
+//                  left,top,width,height,vx,vy,ax,ay,name
+heli = new helicop(200, 300, 90, 185, 0, 0, 0, 0.2, "helicop");
+corda = new rope(23, 23, 5, 100, 0, 0, 0, 0, "corda");
+enemic1 = new helicop(1200, 200, 50, 25, 0, 0, 0, 0, "enemic1");
+
+/*bloc position & speed*/
+bc1 = new edifici(200, heli.y+heli.height, 100, 400, -5, 0, 0, 0, "bloc1");
+bc2 = new edifici(400, 400+Math.random()*100, 100, 400, -5, 0, 0, 0, "bloc2");
+bc3 = new edifici(600, 400+Math.random()*100, 100, 400, -5, 0, 0, 0, "bloc3");
+bc4 = new edifici(800, 400+Math.random()*100, 100, 400, -5, 0, 0, 0, "bloc4");
+bc5 = new edifici(1000, 400+Math.random()*100, 100, 400, -5, 0, 0, 0, "bloc5");
+bc6 = new edifici(1200, 400+Math.random()*100, 100, 400, -5, 0, 0, 0, "bloc6");
+var bloc = [bc1,bc2,bc3,bc4,bc5,bc6];
+
+human = new person(bc6.x+10, bc6.y-90,90, 220, 0, 0, 0, 0, "human1");
+
+var mou = false;
+var sco = 0;
+
+function restart() {
+    if(xocat) {
+	//reinicialitzant les coordenades de l'helicopter i els blocs:
+	bc1.x=200; bc1.y= 300+Math.random()*300;
+	bc2.x=400; bc2.y= 300+Math.random()*300;
+	bc3.x=600; bc3.y= 300+Math.random()*300;
+	bc4.x=800; bc4.y= 300+Math.random()*300;
+	bc5.x=1000; bc5.y= 300+Math.random()*300;
+	bc6.x=1200; bc6.y= 300+Math.random()*300;
+        
+        //reinicialitzant les coordenadees i velocitat del jjjjjjoricopter
+	heli.x = 200; heli.y=bc1.y - heli.height; heli.vx=0; heli.vy=0;
+	//inicilitzant enemic1
+        enemic1.x = 1200; enemic1.y=Math.random()*400; enemic1.vx=0; enemic1.vy=0;
+	
+        corda.angle = 0;
+	mou=false;
+	sco=0;
+        rescats=0;
+	document.getElementById("gameover").style.visibility="hidden"; //amaga el botó restart
+        
+        //erase submit form:
+        document.getElementById("formsendsc").style.visibility="hidden";
+        document.getElementById("user").value="";
+        document.getElementById("email").value="";
+        document.getElementById("comment").value="";
+        document.getElementById("distance").value=0;
+        document.getElementById("clerks").value=0;
+
+        bloc.forEach(element => element.setColour("gray"));
+
+        xocat = false;
+        heli.setCara(":O");
+        mou = true;
+	requestAnimationFrame(move);
+    }
+}
+
+function carrega() {
+	//document.getElementById("aux2").innerHTML="carregant...";
+        draw();
+	//document.getElementById("aux2").innerHTML="hola2 " + corda.angle;
+        heli.setCara(":D");
+        randbolet2(id="fons_de_pant",colors=["white","pink"],boles=80,spready=500,spreadx=1000,minballr=10,maxballr=100);
+        bloc.forEach(element => element.createWindows());
+        
+        intro();
+}
+
+
+
+function intro() {
+    document.getElementById("score").innerHTML="<h1 align='justify' style='text-shadow:1px 1px 4px blue;color: white '><b>Welcome to Ney-city! Floteu i voleu per sobre els eficicis d'aquesta Ney-ciutat. Trobareu alguns Neys somrients als terrats. Si voleu, els podeu agafar amb el pèndol. <b></h1> <br> "+
+            "<center><button onclick='playsong();mou=true;requestAnimationFrame(move)'><h1><b style='color:red'>YES</b></h1></button>"+
+            "<button onclick='caratrista()'><h1><b>NO<b></h1></button>  <button style='color:green' onclick='showranking()'><h1><b>Show Ranking<b></h1></button></center>"; 
+}
+
+function move() {
+	//check hit:
+	if( checkxoc(heli,bc1) || checkxoc(heli,bc2) || checkxoc(heli,bc3) || checkxoc(heli,bc4) || checkxoc(heli,bc5) || checkxoc(heli,bc6) || 
+            checkxoc(heli,enemic1)  )  {
+            gameover();
+            return;
+	}
+        
+        //check resque:
+        if( !rescatat && ( checkxoc(heli,human)  /* ||  
+            xocrotatedrect( [heli.x+corda.x - corda.height*Math.sin(Math.PI*corda.angle/180), heli.y+heli.height+corda.y+Math.cos(Math.PI*corda.angle/180)*corda.height],
+                            [heli.x+corda.x,  heli.y+heli.height+corda.y],
+                            [heli.x+corda.x - corda.height*Math.sin(Math.PI*corda.angle/180) + corda.width*Math.cos(Math.PI*corda.angle/180), heli.y+heli.height+corda.y+Math.cos(Math.PI*corda.angle/180)*corda.height + corda.width*Math.sin(Math.PI*corda.angle/180)],
+                            [heli.x+corda.x + corda.width*Math.cos(Math.PI*corda.angle/180),  heli.y+heli.height+corda.y + corda.width*Math.sin(Math.PI*corda.angle/180)],
+                            human)*/
+            )) {
+            rescats += 1;
+            rescatat = true;
+            document.getElementById("human1").style.visibility = "hidden";
+        }
+        //si no rescata a un clerck posa cara de sorpresa:
+        if(human.x + human.width < heli.x) {
+            human.setCara(":o");
+        } else {
+            human.setCara(":)");
+        }
+        
+	//move
+        if(mou) {
+            heli.move();
+            enemic1.move();
+            bloc.forEach(movebloc);
+            movehuman(human);
+            corda.move();
+	}
+	
+	/*draw helicop and bloc*/
+	draw();
+	
+	/*texts auxiliars*/
+	document.getElementById("aux2").innerHTML = "windown inner width: "+ window.innerWidth + " window.innerHeight: "+window.innerHeight ;
+	document.getElementById("aux1").innerHTML="heli vy:" +Math.round(heli.vy) + "<br> heli y:" + Math.round(heli.y) +
+                 "<br> heli height: " +Math.round(heli.height) + "<br> heli x: " + heli.x +
+	 "<br>bloc vx:" +Math.round(bc1.vx) + "<br>pos x bloc:" +Math.round(bc1.x) +
+	"<br> bloc vy: " +Math.round(bc1.vy) + "<br> bloc y: " + Math.round(bc1.y) + "<br> enemic1 y: " + Math.round(enemic1.y) +
+        "<br> enemic1 x: " + Math.round(enemic1.x) + "<br> request: " + request +
+         "<br> human x: " + human.x + "<br> human y: " + human.y + "<br> human heigth: " + human.height + "<br> human width " + human.width +
+         "<br> bloc 6 y " + bc6.y + "<br> corda*sin(ang corda):"+ Math.round(corda.height*Math.sin(Math.PI*corda.angle/180) ) + 
+          "<br> angle corda: " + corda.angle ;
+	document.getElementById("score").innerHTML = "<h3 style='color:white;text-shadow:1px 1px 4px blue;' ><b>Distance <b style='color:brown;text-shadow:1px 1px 4px blue;'>"+Math.round(sco/10)/100 +" </b></b>km  - Jolies resqued </b><b style='color:brown'>"+rescats+"</b></h3>";
+	if(mou) sco +=1;
+	
+        if( (sco % 400) ===0) {enemic1.x=1200; enemic1.vx=0; enemic1.y=Math.random()*bc1.y    ;}
+        
+	if(sco > 1000) {
+            bloc.forEach(element => element.setColour("DarkSlateBlue"));
+            if(sco > 2000) {
+                bloc.forEach(element => element.setColour("darkgreen"));
+            }
+	}
+        
+        if(heli.y > enemic1.y) {
+            enemic1.vy = 3
+        } else {
+            enemic1.vy=-3
+        }
+	
+	//repeat
+	request = requestAnimationFrame(move); 
+}
+
+function draw() {
+    heli.draw();
+    enemic1.draw();
+    human.draw();
+    corda.draw();
+    
+    bloc.forEach(element => element.draw()); //wow què és això? de:Romà
+}
+
+function gameover() {
+    xocat = true;
+    document.getElementById("formsendsc").style.visibility="visible";
+    document.getElementById("gameover").style.visibility="visible";
+    heli.setCara(":X");
+    document.getElementById("distance").value=Math.round(sco/10)/100;
+    document.getElementById("clerks").value=rescats;
+    
+    window.getSelection().removeAllRanges();
+}
+
+function showranking() {
+    window.location.href = "php/getusers.php";
+}
+function playsong() {
+    var rand = Math.round(Math.random());
+    //canço de fons
+    var song = 'yoshiflowerisland.mp3';
+    if(rand===1)  song='rainbowmeadows.mp3';
+    song = "audio/"+song;
+    document.getElementById("aux3").innerHTML = rand + " " + song;
+    document.getElementById("aux3").visibility ="visible";
+    var cançofons = new Audio(song);
+    cançofons.loop = true;
+    cançofons.play();
+}
+
+</script>
+<div class="solbunch">
+<div class="aura1"></div>
+<div class="aura2"></div>
+<div class="sol">  <img src ="images/joliecap_peque.png" widht="100px"></div>
+</div>
+    
+<div id="fons_de_pant"></div>
+
+<div class="flock">
+    <div class="bird"  style="background-color:black;top:210px;left:40px">
+        <div class="wing wing1"  style="left:-5px;"></div>
+        <div class="wing wing2"  style="left:5px;"></div>
+    </div>
+    <div class="bird" id="bird2" style="background-color:brown;top:220px;left:20px;">
+       <div class="wing wing1"  style="background-color:brown;left:-5px;"></div>
+       <div class="wing wing2"  style="background-color:brown;left:5px;"></div>
+    </div>
+    <div class="bird"  style="background-color:blue;top:230px;">
+        <div class="wing wing1"  style="background-color:blue;left:-5px;"></div>
+        <div class="wing wing2"  style="background-color:blue;left:5px;"></div>
+    </div>
+</div>
+
+<div class="flock" style="top:-110px;left:240px">
+    <div class="bird"  style="background-color:black;top:210px;left:40px">
+        <div class="wing wing1"  style="left:-5px;"></div>
+        <div class="wing wing2"  style="left:5px;"></div>
+    </div>
+    <div class="bird" id="bird2" style="background-color:brown;top:220px;left:20px;">
+       <div class="wing wing1"  style="background-color:brown;left:-5px;"></div>
+       <div class="wing wing2"  style="background-color:brown;left:5px;"></div>
+   </div>
+   <div class="bird"  style="background-color:blue;top:230px;">
+       <div class="wing wing1"  style="background-color:blue;left:-5px;"></div>
+       <div class="wing wing2"  style="background-color:blue;left:5px;"></div>
+   </div>
+</div>
+
+<div class="terra" id="bloc1"></div>
+<div class="terra" id="bloc2"></div>
+<div class="terra" id="bloc3"></div>
+<div class="terra" id="bloc4"></div>
+<div class="terra" id="bloc5"></div>
+<div class="terra" id="bloc6"></div>
+
+<div id="enemic1" class="heli" style="left:100px;background-color:red;transform: rotateY(180deg);visibility:hidden" >
+    <div class="helix1"></div>
+    <div class="helix2"></div>
+    <div class="cuah" style="background-color:red;"></div>
+    <div class="cara2">o.O</div>
+</div>
+
+<div id="human1"><span class="cara3" id="cara_huma">:|</span></div>
+
+<div id="helicop" class="heli">
+    <div class="cara" id="cara"> </div>  
+    
+    
+     
+    <div id="corda"> </div>
+</div>
+
+<div id="score"></div>
+
+<div id="controls">
+    <p id="aux1"></p>
+    <p id="aux2"></p>
+    <p id="aux3"></p>
+</div>
+<br>
+<br>
+<br>
+<div id="formsendsc"> <h2><i>Send score to da server, sist! </i></h2>
+    <form action="php/sendscore.php" >
+        <input placeholder="your name" name="user" id="user"> 
+        <input placeholder="email" name="email" id="email">
+        <p>Comments for the creators Jordi and Romà:</p>
+        <textarea id="comment" placeholder="Your comments on the game" name="comentaris" rows="8" cols="40"></textarea>
+        <br>
+        <input class ="submitbut" type="submit" value="Send score! :D :D Yay!"> 
+        <input placeholder="distance" name="distance" id="distance" style="visibility:hidden" > 
+        <input placeholder="clerks" name="clerks" id="clerks" style="visibility:hidden">
+    </form>
+    <button id="botogameov"  onclick="restart()"><h2><b>Skip and restart</b></h2></button>
+</div>
+
+<div id="gameover"> 
+    <center>
+    <h2><b>GAME OVER</b></h2>
+    </center>
+</div> 
+
+<!--
+<audio autoplay loop  id="playAudio">
+    <source src="audio/rainbowmeadows.mp3" type="audio/mp3">
+</audio> -->
+</body>
+</html> 

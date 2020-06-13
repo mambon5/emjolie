@@ -1,0 +1,16 @@
+#bloc1,#bloc2,#bloc3,#bloc4,#bloc5,#bloc6{
+    position: absolute;
+    height:200px;
+    top:200px;
+    left:150px;
+}
+.finestra {
+    position:absolute;
+    width: 30px;
+    height: 30px;
+    border-color: blue;
+    background: greenyellow;
+}
+.terra{
+    background-color: gray;
+}

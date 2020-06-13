@@ -1,0 +1,78 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26-may-2020, 18:46:42
+    Author     : MiPc
+*/
+
+.bird {
+  position:absolute;
+  width: 10px;
+  height: 4px;
+  border-radius: 90%;
+  background-color: black;
+  animation-name: birdfly;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+  visibility:visible;
+}
+.flock{
+    position:absolute;
+  animation-name: birdmove;
+  animation-duration: 200s;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+  visibility:visible;
+}
+.wing {
+    position:absolute;
+  width: 13px;
+  height: 3px;
+  border-radius: 100%;
+  background-color: black;
+}
+.wing1 {
+  animation-name: wing1;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+.wing2 {
+  animation-name: wing2;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+@keyframes birdmove {
+   0%   {transform: translateX(1200px);visibility:visible }
+  90%  {transform: translateX(-300px);visibility:hidden }
+  100%  {transform: translateX(-300px);visibility:hidden }
+}
+
+@keyframes birdfly {
+    0%   {transform: translateY(10px); }
+  50%  {transform: translateY(-10px);}
+  100%  {transform: translateY(10px);}
+}
+@keyframes wing {
+  0%   {top:100%; }
+  50%  {top:0%;}
+  100%  {top:100%}
+
+}
+@keyframes wing1 {
+  0%   {transform: rotate(30deg); transform-origin: 100% 100%; }
+  50%  {transform: rotate(-30deg); transform-origin: 100% 100%; }
+  100%  {transform: rotate(30deg); transform-origin: 100% 100%; }
+
+}
+@keyframes wing2 {
+  0%   {transform: rotate(-30deg); transform-origin: 0% 0%; }
+  50%  {transform: rotate(30deg); transform-origin: 0% 0%; }
+  100%  {transform: rotate(-30deg); transform-origin: 0% 0%; }
+
+}

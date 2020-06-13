@@ -1,0 +1,68 @@
+#human1{
+    position:absolute;
+    background-image: url("../images/jolietriangle_peque.png");
+    background-repeat: no-repeat;
+}
+#ney{
+    position:absolute;
+    top:-22px;
+    width:55px;
+}
+.leg1 {
+  position:absolute;
+  top:40px;
+  left:10px;
+  height: 4px;
+  width: 20px;
+  background-color: Bisque;
+  transform: rotate(-60deg);
+  border-radius: 40%;
+  display: inline-block;
+}
+.leg2 {
+  position:absolute;
+  top:40px;
+  left:20px;
+  height: 4px;
+  width: 20px;
+  background-color: Bisque;
+  transform: rotate(60deg);
+  border-radius: 40%;
+  display: inline-block;
+}
+.arms {
+  position:absolute;
+  top:20px;
+  left:5px;
+  height: 5px;
+  width: 40px;
+  background-color: Bisque;
+  border-radius: 40%;
+  display: inline-block;
+}
+.head {
+  position:absolute;
+  top:0px;
+  left:17px;
+  height: 15px;
+  width: 15px;
+  background-color: Bisque;
+  border-radius: 40%;
+  display: inline-block;
+}
+.body {
+  position:absolute;
+  top:10px;
+  left:20px;
+  height: 30px;
+  width: 10px;
+  background-color: transparent;
+  border-radius: 40%;
+  display: inline-block;
+}
+.cara3 {
+     position:absolute;
+  transform: rotate(90deg);
+  left:5px;
+  visibility: hidden;
+}

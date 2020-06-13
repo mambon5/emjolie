@@ -1,0 +1,22 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26-may-2020, 14:23:05
+    Author     : MiPc
+*/
+
+#corda{
+    position:absolute;
+    top:23px;
+    left:23px;
+    background-color: #c79645;
+    border-radius: 30%;
+    transform: rotate(20deg);
+    transform-origin: 0% 0%;
+    width:5px;
+    height:50px;
+    visibility:hidden;
+}

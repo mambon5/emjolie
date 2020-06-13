@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html  onclick="volare('helicop')" onkeydown="volare('helicop')">
+<head>
+    <title>Map Creator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<style>
+
+
+    /* per fer animacions mirar-se be al funció requestAnimationFrame() en comptes
+    d'usar setTimeout() */
+    
+    body{
+	background-color:LightCyan;
+        touch-action: manipulation;
+}
+html {
+    touch-action: manipulation;
+}
+
+.heli {   
+  position: absolute;
+  top:200px;
+  left:200px;
+  width:50px;
+  height: 25px;
+  border-radius: 30px;
+  background-color: DarkOliveGreen;
+  color:white;
+}
+.cuah {   
+  position:absolute;
+  top:-12px;
+  left:-7px;
+  height: 25px;
+  width:10px;
+  border-radius: 30px;
+  background-color: DarkOliveGreen;
+  transform: rotate(-60deg);
+  color:purple;
+}
+.helix2 {   
+  position:absolute;
+  top:-17px;
+  left:-25px;
+  height: 20px;
+  width:20px;
+  border-radius: 20px;
+  background-color:silver;
+}
+.helix1 {   
+  position:absolute;
+  top:-30px;
+  left:-15px;
+  height: 15px;
+  width:80px;
+  border-radius: 50%;
+  background-color:silver;
+}
+.cara {   
+  position:absolute;
+  transform: rotate(90deg);
+  left:20px;
+  top:5px;
+}
+.cara2 {   
+  position:absolute;
+  transform: rotate(0deg);
+  left:20px;
+  top:5px;
+}
+.terra{
+	background-color: gray;
+}
+.cel{
+	background-color: blue;
+}
+.boleta {
+    position:absolute;
+     width: 30px;
+      height: 30px;
+      border-radius: 30px;
+      border-color: blue;
+      background: greenyellow;
+      
+    }
+.finestra {
+    position:absolute;
+     width: 30px;
+      height: 30px;
+     
+      border-color: blue;
+      background: greenyellow;
+      
+    }
+#bloc1,#bloc2,#bloc3,#bloc4,#bloc5,#bloc6{
+	position: absolute;
+	height:200px;
+	top:200px;
+	left:150px;
+}
+#gameover{
+	position:absolute;
+	left:200px;
+	top:200px;
+	visibility:hidden;
+	color:red;
+}
+#score{
+    top:30px;
+    left:30px;
+    position:absolute;
+}
+#controls{
+    position:absolute;
+    visibility:visible;
+}
+
+</style>
+</head>
+<body onload="carrega();">
+
+<script src="js/rect.js"></script>
+<script src="js/rectvol.js"></script>
+<script src="js/randbolet2.js"></script>
+<script src="js/underscore.js"></script>
+<script>
+
+
+
+
+let request; //aquesta variable serveix per fer les animacions
+var xocat=false;
+/*helicopter position & speed*/
+// 					left,top,width,height,vx,vy
+heli = new rectvol();
+enemic1 = new rectvol();
+/*bloc position & speed*/
+// 					left, top,width,height,vx,vy
+bc1 = new rectvol();
+bc2 = new rectvol();
+bc3 = new rectvol();
+bc4 = new rectvol();
+bc5 = new rectvol();
+bc6 = new rectvol();
+
+var nomsb = ["bloc1","bloc2","bloc3","bloc4","bloc5","bloc6"];
+var bloc = [bc1,bc2,bc3,bc4,bc5,bc6];
+
+var mou=false;
+var  sco=0;
+
+
+function carrega() {
+	document.getElementById("aux2").innerHTML="carregant...";
+	//reinitializing helicopter
+	heli.width = 50; heli.height = 25; heli.x = 200; heli.y=300; heli.vx=0; heli.vy=0; heli.ay=0.2;
+        //inicilitzant enemic1
+        enemic1.width = 50; enemic1.height = 25; enemic1.x = 1200; enemic1.y=200; enemic1.vx=-10; enemic1.vy=0; enemic1.ay=0;
+	
+        
+        //reinitializing the blocs
+	bc1.width = 100; bc1.height = 400; bc1.x=200; bc1.y= heli.y+30; bc1.vx=-5; bc1.vy=0;
+	bc2.width = 100; bc2.height = 400; bc2.x=400; bc2.y= 400+Math.random()*100; bc2.vx=-5; bc2.vy=0;
+	bc3.width = 100; bc3.height = 400; bc3.x=600; bc3.y= 400+Math.random()*100; bc3.vx=-5; bc3.vy=0;
+	bc4.width = 100; bc4.height = 400; bc4.x=800; bc4.y= 400+Math.random()*100; bc4.vx=-5; bc4.vy=0;
+	bc5.width = 100; bc5.height = 400; bc5.x=1000; bc5.y= 400+Math.random()*100; bc5.vx=-5; bc5.vy=0;
+	bc6.width = 100; bc6.height = 400; bc6.x=1200; bc6.y= 400+Math.random()*100; bc6.vx=-5; bc6.vy=0;
+	draw();
+	document.getElementById("aux2").innerHTML="hola2";
+        document.getElementById("cara").innerHTML=":D";
+        randbolet2(id="fons_de_pant",colors=["white","pink"],boles=80,spready=500,spreadx=1000,minballr=10,maxballr=100);
+        var n = bloc.length;
+        var parag="";
+        for(var i=0;i<n;i++){
+                    //randbolet2(id=nomsb[i],colors=["LightCyan","brown","gray"],boles=10,spready=400,spreadx=100,minballr=20,maxballr=40);			
+                    randquadrats(id=nomsb[i],colors=["LightCyan","salmon","salmon","greenyellow"],fileshor=5,filesver=10,height=400,width=100,border=5);
+                    parag = parag + "<div class='terra' id='" + nomsb[i] + "'>"+ document.getElementById(nomsb[i]).innerHTML + "</div> \n";
+                    
+            }
+          
+        document.getElementById("map").innerHTML = parag;
+         
+}
+
+function caratrista() {
+    document.getElementById("cara").innerHTML=":(";
+}
+
+function intro() {
+  
+            document.getElementById("score").innerHTML="<b>bA long time in the future, in a faraway land.. an office worker is stuck in her office. She is just tired of working and just wants to get out" +
+                    " and scream ALELUYA! with all her might. However, she is stuck in the office. But her employer came to the office by Copter today! So she decides to take the chance and sneak into her" +
+                    " employer copter and take a ride around da city! Will you have what it takes to master the mystery of flight and take a fly around the sky-scrappers? Now is your chance!!!<b> <br> "+
+                    "<button onclick='mou=true;requestAnimationFrame(move)'><b style='color:red'>YES</b></button>"+
+                    "<button onclick='caratrista()'><b style='color:blue'>NO<b></button>"; 
+}
+
+
+
+function draw() {
+	document.getElementById("helicop").style.top=heli.y+"px";
+	document.getElementById("helicop").style.left=heli.x+"px";
+	document.getElementById("helicop").style.width=heli.width+"px";
+	document.getElementById("helicop").style.height=heli.height+"px";
+        
+        document.getElementById("enemic1").style.top=enemic1.y+"px";
+	document.getElementById("enemic1").style.left=enemic1.x+"px";
+	document.getElementById("enemic1").style.width=enemic1.width+"px";
+	document.getElementById("enemic1").style.height=enemic1.height+"px";
+
+	var n = nomsb.length;
+	for(var i=0;i<n;i++){
+	
+		document.getElementById(nomsb[i]).style.top=bloc[i].y+"px";
+		document.getElementById(nomsb[i]).style.left=bloc[i].x+"px";
+		document.getElementById(nomsb[i]).style.width=bloc[i].width+"px";
+		document.getElementById(nomsb[i]).style.height=bloc[i].height+"px";
+	}
+	
+}
+
+
+
+
+</script>
+
+<div id="fons_de_pant"> </div>
+<div style="position:absolute">
+<p>text to copy paste for creating the buildings:</p>
+    <xmp  id="map"> </xmp>
+</div>
+<div class="terra" id="bloc1"></div>
+<div class="terra" id="bloc2"></div>
+<div class="terra" id="bloc3"></div>
+<div class="terra" id="bloc4"></div>
+<div class="terra" id="bloc5"></div>
+<div class="terra" id="bloc6"></div>
+
+
+<div id="enemic1" class="heli" style="left:100px;background-color:red;transform: rotateY(180deg);" >
+    <div class="helix1"></div>
+    <div class="helix2"></div>
+    <div class="cuah" style="background-color:red;"></div>
+    <div class="cara2"> o.O </div>
+</div>
+
+<div id="helicop" class="heli">
+    <div class="helix1"></div>
+    <div class="helix2"></div>
+    <div class="cuah"></div>
+    <div class="cara" id="cara">:d</div>    
+</div>
+        
+
+<div id="gameover"> 
+	<p><b>GAME OVER</b></p>
+	<button id="botogameov" style ="color:blue" onclick="restart()"><b>restart</b></button>
+</div> 
+<div id="score"></div>
+<div id="controls">
+<p id="aux1"></p>
+<p id="aux2"></p>
+
+</div>
+</body  >
+</html> 
